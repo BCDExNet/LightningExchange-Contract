@@ -10,9 +10,9 @@ contract SafeBoxBase {
     mapping(address => EnumerableSet.Bytes32Set) internal depositors;
     mapping(address => EnumerableSet.Bytes32Set) internal withdrawers;
 
-    event DepositCreated(bytes32 indexed secretHash, address indexed depositor, address indexed beneficiary, uint256 amount, uint256 deadline, string invoice);
-    event Withdrawn(bytes32 indexed secretHash, address indexed withdrawer, uint256 amount);
-    event Refunded(bytes32 indexed secretHash, address indexed refundee, uint256 amount);
+    event DepositCreated(bytes32 indexed secretHash, address indexed depositor, address indexed beneficiary, address token, uint256 amount, uint256 deadline, string invoice);
+    event Withdrawn(bytes32 indexed secretHash, address indexed withdrawer, address token, uint256 amount);
+    event Refunded(bytes32 indexed secretHash, address indexed refundee, address token, uint256 amount);
 
 
     function sha256Hash(bytes memory secret) public pure returns (bytes32) {

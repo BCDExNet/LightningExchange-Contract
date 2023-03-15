@@ -39,7 +39,7 @@ contract SafeBoxNative is SafeBoxBase {
         depositors[msg.sender].add(secretHash);
         withdrawers[beneficiary].add(secretHash);
 
-        emit DepositCreated(secretHash, msg.sender, beneficiary, amount, deadline, invoice);
+        emit DepositCreated(secretHash, msg.sender, beneficiary, address(0), amount, deadline, invoice);
     }
 
     function withdraw(bytes memory secret) external {
@@ -55,7 +55,7 @@ contract SafeBoxNative is SafeBoxBase {
         depositors[depositItem.depositor].remove(secretHash);
         payable(depositItem.beneficiary).transfer(depositItem.amount);
 
-        emit Withdrawn(secretHash, msg.sender, depositItem.amount);
+        emit Withdrawn(secretHash, msg.sender, address(0), depositItem.amount);
     }
 
     function delegateWithdraw(bytes memory secret, address account) external {
@@ -71,7 +71,7 @@ contract SafeBoxNative is SafeBoxBase {
         depositors[depositItem.depositor].remove(secretHash);
         payable(depositItem.beneficiary).transfer(depositItem.amount);
 
-        emit Withdrawn(secretHash, msg.sender, depositItem.amount);
+        emit Withdrawn(secretHash, account, address(0), depositItem.amount);
     }
 
     function refund(bytes32 secretHash) external {
@@ -85,7 +85,7 @@ contract SafeBoxNative is SafeBoxBase {
         depositors[msg.sender].remove(secretHash);
         payable(depositItem.depositor).transfer(depositItem.amount);
 
-        emit Refunded(secretHash, msg.sender, depositItem.amount);
+        emit Refunded(secretHash, msg.sender, address(0), depositItem.amount);
     }
 
 
@@ -100,11 +100,11 @@ contract SafeBoxNative is SafeBoxBase {
         depositors[depositor].remove(secretHash);
         payable(depositItem.depositor).transfer(depositItem.amount);
 
-        emit Refunded(secretHash, depositor, depositItem.amount);
+        emit Refunded(secretHash, depositor, address(0), depositItem.amount);
     }
 
-    function getDeposit(bytes32 hash) external view returns (address depositor, address beneficiary, uint256 amount, uint256 deadline, bool withdrawn) {
-        Deposit memory depositItem = deposits[hash];
+    function getDeposit(bytes32 secretHash) external view returns (address depositor, address beneficiary, uint256 amount, uint256 deadline, bool withdrawn) {
+        Deposit memory depositItem = deposits[secretHash];
 
         require(depositItem.depositor != address(0), "Deposit does not exist");
 

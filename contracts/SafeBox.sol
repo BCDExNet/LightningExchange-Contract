@@ -40,7 +40,7 @@ contract SafeBox is SafeBoxBase {
         depositors[msg.sender].add(secretHash);
         withdrawers[beneficiary].add(secretHash);
 
-        emit DepositCreated(secretHash, msg.sender, beneficiary, amount, deadline, invoice);
+        emit DepositCreated(secretHash, msg.sender, beneficiary, token, amount, deadline, invoice);
     }
 
     function withdraw(bytes memory secret) external {
@@ -56,7 +56,7 @@ contract SafeBox is SafeBoxBase {
         depositors[depositItem.depositor].remove(secretHash);
         IERC20(depositItem.token).transfer(msg.sender, depositItem.amount);
 
-        emit Withdrawn(secretHash, msg.sender, depositItem.amount);
+        emit Withdrawn(secretHash, msg.sender, depositItem.token, depositItem.amount);
     }
 
     function delegateWithdraw(bytes memory secret, address account) external {
@@ -72,7 +72,7 @@ contract SafeBox is SafeBoxBase {
         depositors[depositItem.depositor].remove(secretHash);
         IERC20(depositItem.token).transfer(account, depositItem.amount);
 
-        emit Withdrawn(secretHash, msg.sender, depositItem.amount);
+        emit Withdrawn(secretHash, account, depositItem.token, depositItem.amount);
     }
 
     function refund(bytes32 secretHash) external {
@@ -86,7 +86,7 @@ contract SafeBox is SafeBoxBase {
         depositors[msg.sender].remove(secretHash);
         IERC20(depositItem.token).transfer(depositItem.depositor, depositItem.amount);
 
-        emit Refunded(secretHash, msg.sender, depositItem.amount);
+        emit Refunded(secretHash, msg.sender, depositItem.token, depositItem.amount);
     }
 
     function delegateRefund(bytes32 secretHash, address depositor) external {
@@ -100,7 +100,7 @@ contract SafeBox is SafeBoxBase {
         depositors[depositor].remove(secretHash);
         IERC20(depositItem.token).transfer(depositItem.depositor, depositItem.amount);
 
-        emit Refunded(secretHash, depositor, depositItem.amount);
+        emit Refunded(secretHash, depositor, depositItem.token, depositItem.amount);
     }
 
     function getDeposit(bytes32 secretHash) external view returns (address depositor, address beneficiary, address token, uint256 amount, uint256 deadline, bool withdrawn, string memory invoice) {
