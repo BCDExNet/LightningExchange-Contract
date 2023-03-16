@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./SafeBoxBase.sol";
+import "./PriceOracle.sol";
 
 contract SafeBox is SafeBoxBase {
     using EnumerableSet for EnumerableSet.Bytes32Set;
@@ -17,6 +18,8 @@ contract SafeBox is SafeBoxBase {
         uint256 deadline;
         string invoice;
         bool withdrawn;
+        uint256 btcPrice;
+        uint256 tokenPrice;
     }
 
     mapping(bytes32 => Deposit) private deposits;
@@ -26,6 +29,13 @@ contract SafeBox is SafeBoxBase {
 
         require(deposits[secretHash].depositor == address(0), "Deposit already exists");
 
+        uint256 btcPrice = 0;
+        uint256 tokenPrice = 0;
+        if (oracle != address(0)) {
+            btcPrice = PriceOracle(oracle).getBTCPrice();
+            tokenPrice = PriceOracle(oracle).getTokenPrice(token);
+        }
+
         deposits[secretHash] = Deposit({
             depositor: msg.sender,
             beneficiary: beneficiary,
@@ -34,7 +44,9 @@ contract SafeBox is SafeBoxBase {
             secretHash: secretHash,
             deadline: deadline,
             invoice: invoice,
-            withdrawn: false
+            withdrawn: false,
+            btcPrice: btcPrice,
+            tokenPrice: tokenPrice
         });
 
         depositors[msg.sender].add(secretHash);
@@ -103,12 +115,13 @@ contract SafeBox is SafeBoxBase {
         emit Refunded(secretHash, depositor, depositItem.token, depositItem.amount);
     }
 
-    function getDeposit(bytes32 secretHash) external view returns (address depositor, address beneficiary, address token, uint256 amount, uint256 deadline, bool withdrawn, string memory invoice) {
+    function getDeposit(bytes32 secretHash) external view returns (address depositor, address beneficiary, address token, uint256 amount, uint256 deadline, bool withdrawn, string memory invoice, uint256 btcPrice, uint256 tokenPrice) {
         Deposit memory depositItem = deposits[secretHash];
 
         require(depositItem.depositor != address(0), "Deposit does not exist");
 
-        return (depositItem.depositor, depositItem.beneficiary, depositItem.token, depositItem.amount, depositItem.deadline, depositItem.withdrawn, depositItem.invoice);
+        return (depositItem.depositor, depositItem.beneficiary, depositItem.token, depositItem.amount,
+            depositItem.deadline, depositItem.withdrawn, depositItem.invoice, depositItem.btcPrice, depositItem.tokenPrice);
     }
 
 }

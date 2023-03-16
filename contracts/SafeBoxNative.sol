@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "./SafeBoxBase.sol";
+import "./PriceOracle.sol";
 
 contract SafeBoxNative is SafeBoxBase {
     using EnumerableSet for EnumerableSet.Bytes32Set;
@@ -16,6 +17,8 @@ contract SafeBoxNative is SafeBoxBase {
         uint256 deadline;
         string invoice;
         bool withdrawn;
+        uint256 btcPrice;
+        uint256 nativePrice;
     }
 
     mapping(bytes32 => Deposit) private deposits;
@@ -26,6 +29,13 @@ contract SafeBoxNative is SafeBoxBase {
 
         require(deposits[secretHash].depositor == address(0), "Deposit already exists");
 
+        uint256 btcPrice = 0;
+        uint256 nativePrice = 0;
+        if (oracle != address(0)) {
+            btcPrice = PriceOracle(oracle).getBTCPrice();
+            nativePrice = PriceOracle(oracle).getNativePrice();
+        }
+
         deposits[secretHash] = Deposit({
             depositor: msg.sender,
             beneficiary: beneficiary,
@@ -33,7 +43,9 @@ contract SafeBoxNative is SafeBoxBase {
             secretHash: secretHash,
             deadline: deadline,
             invoice: invoice,
-            withdrawn: false
+            withdrawn: false,
+            btcPrice: btcPrice,
+            nativePrice: nativePrice
         });
 
         depositors[msg.sender].add(secretHash);
@@ -103,12 +115,14 @@ contract SafeBoxNative is SafeBoxBase {
         emit Refunded(secretHash, depositor, address(0), depositItem.amount);
     }
 
-    function getDeposit(bytes32 secretHash) external view returns (address depositor, address beneficiary, uint256 amount, uint256 deadline, bool withdrawn) {
+    function getDeposit(bytes32 secretHash) external view returns
+        (address depositor, address beneficiary, uint256 amount, uint256 deadline, bool withdrawn, string memory invoice, uint256 btcPrice, uint256 nativePrice) {
         Deposit memory depositItem = deposits[secretHash];
 
         require(depositItem.depositor != address(0), "Deposit does not exist");
 
-        return (depositItem.depositor, depositItem.beneficiary, depositItem.amount, depositItem.deadline, depositItem.withdrawn);
+        return (depositItem.depositor, depositItem.beneficiary, depositItem.amount, depositItem.deadline,
+            depositItem.withdrawn, depositItem.invoice, depositItem.btcPrice, depositItem.nativePrice);
     }
 
 }

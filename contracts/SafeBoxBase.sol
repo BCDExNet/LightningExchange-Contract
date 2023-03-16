@@ -3,17 +3,20 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract SafeBoxBase {
+contract SafeBoxBase is Ownable {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     mapping(address => EnumerableSet.Bytes32Set) internal depositors;
     mapping(address => EnumerableSet.Bytes32Set) internal withdrawers;
 
+    address public oracle;
+
     event DepositCreated(bytes32 indexed secretHash, address indexed depositor, address indexed beneficiary, address token, uint256 amount, uint256 deadline, string invoice);
     event Withdrawn(bytes32 indexed secretHash, address indexed withdrawer, address token, uint256 amount);
     event Refunded(bytes32 indexed secretHash, address indexed refundee, address token, uint256 amount);
-
+    event OracleSet(address indexed oracle);
 
     function sha256Hash(bytes memory secret) public pure returns (bytes32) {
         bytes32 secretHash = sha256(abi.encodePacked(secret));
@@ -42,5 +45,10 @@ contract SafeBoxBase {
 
     function getWithdrawerHashByIndex(address withdrawer, uint256 index) external view returns (bytes32) {
         return withdrawers[withdrawer].at(index);
+    }
+
+    function setOracle(address _oracle) external onlyOwner {
+        oracle = _oracle;
+        emit OracleSet(_oracle);
     }
 }
