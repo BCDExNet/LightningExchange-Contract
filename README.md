@@ -110,7 +110,7 @@ By default, the command above starts a dashboard at http://localhost:24012 and o
 truffle migrate --network dashboard
 ```
 
-For more information on using Truffle Dashboard, refer to the official documentation (https://www.trufflesuite.com/docs/truffle/dashboard/overview).
+For more information on using Truffle Dashboard, refer to the official documentation (https://trufflesuite.com/docs/truffle/how-to/use-the-truffle-dashboard/).
 
 
 ## License
