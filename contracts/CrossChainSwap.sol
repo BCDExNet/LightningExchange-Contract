@@ -3,10 +3,10 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./SafeBoxBase.sol";
+import "./CrossChainSwapBase.sol";
 import "./PriceOracle.sol";
 
-contract SafeBox is SafeBoxBase {
+contract CrossChainSwap is CrossChainSwapBase {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     struct Deposit {

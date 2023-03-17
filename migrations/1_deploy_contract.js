@@ -1,7 +1,7 @@
-const SafeBox = artifacts.require("SafeBox");
-const SafeBoxNative = artifacts.require("SafeBoxNative");
+const CrossChainSwap = artifacts.require("CrossChainSwap");
+const CrossChainSwapNative = artifacts.require("CrossChainSwapNative");
 
 module.exports = async function(deployer, network, accounts) {
-    await deployer.deploy(SafeBox);
-    await deployer.deploy(SafeBoxNative);
+    await deployer.deploy(CrossChainSwap);
+    await deployer.deploy(CrossChainSwapNative);
 }

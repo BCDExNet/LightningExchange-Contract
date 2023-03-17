@@ -3,10 +3,10 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "./SafeBoxBase.sol";
+import "./CrossChainSwapBase.sol";
 import "./PriceOracle.sol";
 
-contract SafeBoxNative is SafeBoxBase {
+contract CrossChainSwapNative is CrossChainSwapBase {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     struct Deposit {

@@ -5,8 +5,10 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract SafeBoxBase is Ownable {
+contract CrossChainSwapBase is Ownable {
     using EnumerableSet for EnumerableSet.Bytes32Set;
+
+    string public constant VERSION = "0.1.0";
 
     mapping(address => EnumerableSet.Bytes32Set) internal depositors;
     mapping(address => EnumerableSet.Bytes32Set) internal withdrawers;
