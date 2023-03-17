@@ -112,6 +112,12 @@ truffle migrate --network dashboard
 
 For more information on using Truffle Dashboard, refer to the official documentation (https://trufflesuite.com/docs/truffle/how-to/use-the-truffle-dashboard/).
 
+## Contracts
+
+| Blockchain | CrossChainSwap | CrossChainSwapNative |
+|---------------------------------|---------------------------------|---------------------------------|
+| BSC | 0x3b37A2d1E22ce6574F4De4db78A3931Fc6659B9e | 0x4a653cAb18E612F8a880D07f0968E2343A4B170C |
+
 
 ## License
 
