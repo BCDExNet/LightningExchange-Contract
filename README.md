@@ -114,9 +114,9 @@ For more information on using Truffle Dashboard, refer to the official documenta
 
 ## Contracts
 
-| Blockchain | CrossChainSwap | CrossChainSwapNative |
+| Blockchain | LightningSwap | LightningSwapNative |
 |---------------------------------|---------------------------------|---------------------------------|
-| BSC | 0x3b37A2d1E22ce6574F4De4db78A3931Fc6659B9e | 0x4a653cAb18E612F8a880D07f0968E2343A4B170C |
+| BSC | 0xd1a9559D4D54Ae11ad5ceBa1b309484502f4575d | 0x316a4B704cbb793d16b7DF228805F49beeb040c5 |
 
 
 ## License

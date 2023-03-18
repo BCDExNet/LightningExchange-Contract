@@ -1,7 +1,7 @@
-const CrossChainSwap = artifacts.require("CrossChainSwap");
-const CrossChainSwapNative = artifacts.require("CrossChainSwapNative");
+const LightningSwap = artifacts.require("LightningSwap");
+const LightningSwapNative = artifacts.require("LightningSwapNative");
 
 module.exports = async function(deployer, network, accounts) {
-    await deployer.deploy(CrossChainSwap);
-    await deployer.deploy(CrossChainSwapNative);
+    await deployer.deploy(LightningSwap);
+    await deployer.deploy(LightningSwapNative);
 }
