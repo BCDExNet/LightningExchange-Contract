@@ -117,6 +117,8 @@ For more information on using Truffle Dashboard, refer to the official documenta
 | Blockchain | LightningSwap | LightningSwapNative |
 |---------------------------------|---------------------------------|---------------------------------|
 | BSC | 0xd1a9559D4D54Ae11ad5ceBa1b309484502f4575d | 0x316a4B704cbb793d16b7DF228805F49beeb040c5 |
+| ESC | 0xcCfC09e473911820639e5DD3c71987fD0597eec0 | 0x23DafbC321dEEEcd3Efdf3fA7593C8d33dcbac11 |
+| ARBI | 0xB5a90265631efECF6e4B4F23C23f4B7367839D63 | 0xeDF9AE3Dfa601ec70085ed7c898D0553b6450F08 |
 
 
 ## License
