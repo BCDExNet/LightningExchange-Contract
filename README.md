@@ -117,8 +117,11 @@ For more information on using Truffle Dashboard, refer to the official documenta
 | Blockchain | LightningSwap | LightningSwapNative |
 |---------------------------------|---------------------------------|---------------------------------|
 | BSC | 0xd1a9559D4D54Ae11ad5ceBa1b309484502f4575d | 0x316a4B704cbb793d16b7DF228805F49beeb040c5 |
-| ESC | 0xcCfC09e473911820639e5DD3c71987fD0597eec0 | 0x23DafbC321dEEEcd3Efdf3fA7593C8d33dcbac11 |
 | ARBI | 0xB5a90265631efECF6e4B4F23C23f4B7367839D63 | 0xeDF9AE3Dfa601ec70085ed7c898D0553b6450F08 |
+| ESC | 0xcCfC09e473911820639e5DD3c71987fD0597eec0 | 0x23DafbC321dEEEcd3Efdf3fA7593C8d33dcbac11 |
+| KCC | 0x3fa4Fbb9e59A0fe2F633ce00660b7Fa5Eb548c64 | 0xCe5fbC259b9909A776ae60bCC2a92D6c7F70b2C3 |
+| REI | 0x9AB67c40c5A6E45b363e6bC33fF2645a12A585e1 | 0xD1dd77Ec76Bc2Ba9Ab987B8719d0B2527d741ecC |
+| IOTEX | 0x10d0B5104EAd7D02edfae38dea77474627e0Ea57 | 0xeA24c4b9FF56d0867530F3401262CE84aBc11F7d |
 
 
 ## License
