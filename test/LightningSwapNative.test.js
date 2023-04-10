@@ -155,10 +155,29 @@ contract("LightningSwapNative", (accounts) => {
         let blockNumber = await web3.eth.getBlockNumber();
         let block = await web3.eth.getBlock(blockNumber);
         let timestamp = block.timestamp - 100;
+        await safebox.deposit(withdrawer, hash, timestamp, "test", {from: depositer, value: amount});
+        await safebox.refund(hash, {from: depositer});
+    });
+
+    it("should delegateRefund successfully", async() => {
+        let amount = web3.utils.toWei("10","ether");
+
+        const sceret = web3.utils.asciiToHex("abcdefg234898988");
+
+        let hash = await safebox.sha256Hash(sceret);
+
+        let blockNumber = await web3.eth.getBlockNumber();
+        let block = await web3.eth.getBlock(blockNumber);
+        let timestamp = block.timestamp - 100;
 
         await safebox.deposit(withdrawer, hash, timestamp, "test", {from: depositer, value: amount});
 
-        await safebox.refund(hash, {from: depositer});
+        let balance = await web3.eth.getBalance(depositer);
+        await safebox.delegateRefund(hash, depositer, {from: intender});
+
+        let balanceAfter = await web3.eth.getBalance(depositer);
+        let delta = balanceAfter - balance;
+        assert.equal(delta, amount, "delegateRefund amount not match");
     });
 
     it("should get depositor successfully", async() => {

@@ -5,16 +5,32 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./PriceOracle.sol";
 
 // Custom interface extending IERC20 with the decimals function
 interface IERC20WithDecimals is IERC20 {
     function decimals() external view returns (uint8);
 }
 
-contract LightningSwapBase is Ownable {
+abstract contract LightningSwapBase is Ownable {
     using EnumerableSet for EnumerableSet.Bytes32Set;
 
     string public constant VERSION = "0.1.0";
+
+    struct Deposit {
+        address depositor;
+        address beneficiary;
+        address token;
+        uint256 amount;
+        bytes32 secretHash;
+        uint256 deadline;
+        string invoice;
+        bool withdrawn;
+        uint256 btcPrice;
+        uint256 tokenPrice;
+    }
+
+    mapping(bytes32 => Deposit) private deposits;
 
     mapping(address => EnumerableSet.Bytes32Set) internal depositors;
     mapping(address => EnumerableSet.Bytes32Set) internal withdrawers;
@@ -138,4 +154,92 @@ contract LightningSwapBase is Ownable {
 
         return btcPrice;
     }
+
+    function depositInternal(address token, uint256 amount, address beneficiary, bytes32 secretHash, uint256 deadline, string memory invoice) internal {
+        require(deposits[secretHash].depositor == address(0), "Deposit already exists");
+
+        uint256 btcPrice = 0;
+        uint256 tokenPrice = 0;
+        if (oracle != address(0)) {
+            btcPrice = PriceOracle(oracle).getBTCPrice();
+            tokenPrice = PriceOracle(oracle).getTokenPrice(token);
+        }
+
+        deposits[secretHash] = Deposit({
+            depositor: msg.sender,
+            beneficiary: beneficiary,
+            token: token,
+            amount: amount,
+            secretHash: secretHash,
+            deadline: deadline,
+            invoice: invoice,
+            withdrawn: false,
+            btcPrice: btcPrice,
+            tokenPrice: tokenPrice
+        });
+
+        depositors[msg.sender].add(secretHash);
+        withdrawers[beneficiary].add(secretHash);
+
+        emit DepositCreated(secretHash, msg.sender, beneficiary, token, amount, deadline, invoice);
+    }
+
+    function transferOut(address token, address account, uint256 amount) internal virtual;
+
+    function withrawInternal(bytes memory secret, address account) internal {
+        bytes32 secretHash = sha256(abi.encodePacked(secret));
+        Deposit memory depositItem = deposits[secretHash];
+
+        require(depositItem.beneficiary == account, "Invalid beneficiary");
+        require(depositItem.deadline >= block.timestamp, "Deposit has expired");
+        require(!depositItem.withdrawn, "Deposit has already been withdrawn");
+
+        deposits[secretHash].withdrawn = true;
+        withdrawers[account].remove(secretHash);
+        depositors[depositItem.depositor].remove(secretHash);
+
+        transferOut(depositItem.token, depositItem.beneficiary, depositItem.amount);
+
+        emit Withdrawn(secretHash, account, depositItem.token, depositItem.amount);
+    }
+
+    function withdraw(bytes memory secret) external {
+        withrawInternal(secret, msg.sender);
+    }
+
+    function delegateWithdraw(bytes memory secret, address account) external {
+        withrawInternal(secret, account);
+    }
+
+    function refundInternal(bytes32 secretHash, address depositor) internal {
+        Deposit memory depositItem = deposits[secretHash];
+
+        require(depositItem.depositor == depositor && depositItem.deadline < block.timestamp, "Invalid refund requester");
+        require(!depositItem.withdrawn, "Deposit has already been withdrawn");
+
+        deposits[secretHash].withdrawn = true;
+        withdrawers[depositItem.beneficiary].remove(secretHash);
+        depositors[msg.sender].remove(secretHash);
+        transferOut(depositItem.token, depositItem.depositor, depositItem.amount);
+
+        emit Refunded(secretHash, depositor, depositItem.token, depositItem.amount);
+    }
+
+    function refund(bytes32 secretHash) external {
+        refundInternal(secretHash, msg.sender);
+    }
+
+    function delegateRefund(bytes32 secretHash, address depositor) external {
+        refundInternal(secretHash, depositor);
+    }
+
+    function getDeposit(bytes32 secretHash) external view returns (address depositor, address beneficiary, address token, uint256 amount, uint256 deadline, bool withdrawn, string memory invoice, uint256 btcPrice, uint256 tokenPrice) {
+        Deposit memory depositItem = deposits[secretHash];
+
+        require(depositItem.depositor != address(0), "Deposit does not exist");
+
+        return (depositItem.depositor, depositItem.beneficiary, depositItem.token, depositItem.amount,
+            depositItem.deadline, depositItem.withdrawn, depositItem.invoice, depositItem.btcPrice, depositItem.tokenPrice);
+    }
+
 }
